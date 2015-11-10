@@ -1,5 +1,5 @@
 package com.mateusz.client;
 
 public enum MessageType {
-	SUBSCRIBE, POSITION
+	SUBSCRIBE, POSITION_UPDATE
 }

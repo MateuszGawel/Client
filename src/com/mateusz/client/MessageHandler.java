@@ -14,7 +14,6 @@ public class MessageHandler {
 	private static final int MESSAGE_SEND_INTERVAL = 1000;
 
 	private float stateTime;
-	private String name;
 	private boolean connected;
 	
 	private Socket playerSocket;
@@ -28,7 +27,7 @@ public class MessageHandler {
 			out = new DataOutputStream(playerSocket.getOutputStream());
 			connected = true;
 			System.out.println("JESTEM: " + name);
-			sendMessage("SENDER:" + name + ":MSG:SUBSCRIBE");
+			sendMessage(new Message(MessageType.SUBSCRIBE, null, name));
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "Couldn't connect. Server is down.");
 		}
@@ -38,16 +37,19 @@ public class MessageHandler {
 		stateTime += delta;
 		if (connected && stateTime > MESSAGE_SEND_INTERVAL) {
 			stateTime = 0;
-			sendMessage("SENDER:" + name + ":MSG:" + "dupa");
+			//tutaj wysylam zakolejkowany message
 		}
 	}
 
 	public void listen() {
 		if (connected) {
 			try {
-				//tu sie blokuje, albo synchronicznie albo wyodrebnic do watku
-				String inputMessage = in.readUTF();
-				System.out.println("GOT MESSAGE: " + inputMessage);
+				if(in.available() > 0) {
+					String inputMessage = in.readUTF();
+					Message message = JSONConverter.JSONtoObject(inputMessage, Message.class);
+					System.out.println("GOT MESSAGE: " + message.toString());
+					handleMessages(message);
+				}
 			} catch (IOException e) {
 				LOGGER.log(Level.INFO, "Connection lost");
 				connected = false;
@@ -57,23 +59,20 @@ public class MessageHandler {
 			LOGGER.log(Level.INFO, "Player is not connected");
 	}
 
-	private void sendMessage(String msg) {
+	public void handleMessages(Message message){
+		//tutaj musze leciec po enumie i wszystkich mozliwych messagach i je obslugiwac
+		//wazne ze message przychodzic beda od wielu playerow
+	}
+	
+	private void sendMessage(Message message) {
 		try {
-			out.writeUTF(msg);
+			out.writeUTF(JSONConverter.ObjectToJSON(message));
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "Couldn't send message");
 			connected = false;
 		}
 	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
+	
 	public boolean isConnected() {
 		return connected;
 	}
