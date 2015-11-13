@@ -7,8 +7,6 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.mateusz.client.Message.MessageBuilder;
-
 public abstract class MessageHandler {
 	private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
 	private static final int SERVER_PORT = 6066;
@@ -38,7 +36,7 @@ public abstract class MessageHandler {
 			connected = true;
 			playerName = name;
 			System.out.println("JESTEM: " + playerName);
-			sendMessage(new Message.MessageBuilder().type(MessageType.SUBSCRIBE).senderName(playerName).content("subscribe").build());
+			sendMessage(new MessageBuilder(MessageType.SUBSCRIBE, playerName).content("subscribe").build());
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "Couldn't connect. Server is down.");
 		}
@@ -57,8 +55,7 @@ public abstract class MessageHandler {
 			try {
 				if (in.available() > 0) {
 					String inputMessage = in.readUTF();
-					MessageBuilder<?> messageBuilder = JSONConverter.JSONtoObject(inputMessage, MessageBuilder.class);
-					Message message = messageBuilder.build();
+					Message message = JSONConverter.JSONtoObject(inputMessage, Message.class);
 					System.out.println("GOT MESSAGE: " + message.toString());
 					handleMessages(message);
 				}

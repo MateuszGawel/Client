@@ -10,49 +10,20 @@ public class Message implements Serializable {
 	private Object content;
 	private String senderName;
 
-	public static class MessageBuilder<T extends MessageBuilder<?>> {
-		private MessageType type;
-		private Object content;
-		private String senderName;
-
-		public MessageBuilder() {
-
-		}
-
-		public MessageBuilder(MessageType type, Object content, String senderName) {
-			this.type = type;
-			this.content = content;
-			this.senderName = senderName;
-		}
-
-		@SuppressWarnings("unchecked")
-		public T type(MessageType type) {
-			this.type = type;
-			return (T) this;
-		}
-
-		@SuppressWarnings("unchecked")
-		public T content(Object content) {
-			this.content = content;
-			return (T) this;
-		}
-
-		@SuppressWarnings("unchecked")
-		public T senderName(String senderName) {
-			this.senderName = senderName;
-			return (T) this;
-		}
-
-		public Message build() {
-			return new Message(this);
-		}
+	public Message() {
 
 	}
 
-	protected Message(MessageBuilder<?> messageBuilder) {
-		this.type = messageBuilder.type;
-		this.content = messageBuilder.content;
-		this.senderName = messageBuilder.senderName;
+	public Message(MessageType type, Object content, String senderName) {
+		this.type = type;
+		this.content = content;
+		this.senderName = senderName;
+	}
+
+	public Message(MessageBuilder<?> messageBuilder) {
+		this.type = messageBuilder.getType();
+		this.content = messageBuilder.getContent();
+		this.senderName = messageBuilder.getSenderName();
 	}
 
 	public MessageType getType() {
