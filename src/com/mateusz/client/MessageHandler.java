@@ -7,7 +7,7 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class MessageHandler {
+public abstract class MessageHandler {
 	private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
 	private static final int SERVER_PORT = 6066;
 	private static final String SERVER_ADDRESS = "localhost";
@@ -20,14 +20,17 @@ public class MessageHandler {
 	private DataInputStream in;
 	private DataOutputStream out;
 
+	private String playerName;
+	
 	public void connect(String name) {
 		try {
 			playerSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 			in = new DataInputStream(playerSocket.getInputStream());
 			out = new DataOutputStream(playerSocket.getOutputStream());
 			connected = true;
+			playerName = name;
 			System.out.println("JESTEM: " + name);
-			sendMessage(new Message(MessageType.SUBSCRIBE, null, name));
+			sendMessage(new Message(MessageType.SUBSCRIBE, "newPlayer", name));
 		} catch (IOException e) {
 			LOGGER.log(Level.INFO, "Couldn't connect. Server is down.");
 		}
@@ -59,12 +62,9 @@ public class MessageHandler {
 			LOGGER.log(Level.INFO, "Player is not connected");
 	}
 
-	public void handleMessages(Message message){
-		//tutaj musze leciec po enumie i wszystkich mozliwych messagach i je obslugiwac
-		//wazne ze message przychodzic beda od wielu playerow
-	}
+	public abstract void handleMessages(Message message);
 	
-	private void sendMessage(Message message) {
+	protected void sendMessage(Message message) {
 		try {
 			out.writeUTF(JSONConverter.ObjectToJSON(message));
 		} catch (IOException e) {
@@ -79,5 +79,9 @@ public class MessageHandler {
 
 	public void setConnected(boolean connected) {
 		this.connected = connected;
+	}
+
+	public String getPlayerName() {
+		return playerName;
 	}
 }
