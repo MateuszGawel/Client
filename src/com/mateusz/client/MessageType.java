@@ -1,5 +1,5 @@
 package com.mateusz.client;
 
 public enum MessageType {
-	SUBSCRIBE, UPDATE
+	SUBSCRIBE, UPDATE_STATE
 }

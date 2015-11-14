@@ -14,12 +14,6 @@ public class Message implements Serializable {
 
 	}
 
-	public Message(MessageType type, Object content, String senderName) {
-		this.type = type;
-		this.content = content;
-		this.senderName = senderName;
-	}
-
 	public Message(MessageBuilder<?> messageBuilder) {
 		this.type = messageBuilder.getType();
 		this.content = messageBuilder.getContent();

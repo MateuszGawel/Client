@@ -7,11 +7,11 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public abstract class MessageHandler {
-	private static final Logger LOGGER = Logger.getLogger(MessageHandler.class.getName());
+public abstract class AbstractMessageHandler {
+	private static final Logger LOGGER = Logger.getLogger(AbstractMessageHandler.class.getName());
 	private static final int SERVER_PORT = 6066;
 	private static final String SERVER_ADDRESS = "localhost";
-	private static final int MESSAGE_SEND_INTERVAL = 1000;
+	private static final float MESSAGE_SEND_INTERVAL = 0.1f;
 
 	private float stateTime;
 	private boolean connected;
@@ -23,7 +23,7 @@ public abstract class MessageHandler {
 	private String playerName;
 	private MessageBuilder<?> synchronousMessageBuilder;
 
-	public MessageHandler(MessageBuilder<?> messageBuilder) {
+	public AbstractMessageHandler(MessageBuilder<?> messageBuilder) {
 		this.synchronousMessageBuilder = messageBuilder;
 	}
 
@@ -55,9 +55,8 @@ public abstract class MessageHandler {
 			try {
 				if (in.available() > 0) {
 					String inputMessage = in.readUTF();
-					Message message = JSONConverter.JSONtoObject(inputMessage, Message.class);
-					System.out.println("GOT MESSAGE: " + message.toString());
-					handleMessages(message);
+					System.out.println("GOT MESSAGE: " + inputMessage);
+					handleMessages(inputMessage);
 				}
 			} catch (IOException e) {
 				LOGGER.log(Level.INFO, "Connection lost");
@@ -67,7 +66,7 @@ public abstract class MessageHandler {
 			LOGGER.log(Level.INFO, "Player is not connected");
 	}
 
-	public abstract void handleMessages(Message message);
+	public abstract void handleMessages(String message);
 
 	protected void sendMessage(Message message) {
 		try {
