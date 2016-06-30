@@ -1,4 +1,4 @@
-package com.mateusz.client;
+package com.mateusz.api;
 
 import java.io.Serializable;
 

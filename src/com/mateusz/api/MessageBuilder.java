@@ -1,4 +1,4 @@
-package com.mateusz.client;
+package com.mateusz.api;
 
 public class MessageBuilder<T extends MessageBuilder<?>> {
 	private MessageType type;
