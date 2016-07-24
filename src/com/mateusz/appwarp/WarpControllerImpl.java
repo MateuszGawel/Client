@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mateusz.api.GameState;
 import com.mateusz.appwarp.listener.ChatListener;
 import com.mateusz.appwarp.listener.ConnectionListener;
 import com.mateusz.appwarp.listener.LobbyListener;
@@ -27,13 +28,13 @@ public class WarpControllerImpl implements WarpController {
 	private final String apiKey = "96fdf27bb654f2d6e0e5fc558673b728b636deebc01e5725d6275f92148a871c";
 	private final String secretKey = "48bffe83864b4b125ed75192784ec2e8579cb73ba1b420e72ae095b2455b80c4";
 	private WarpClient warpClient;
-	private AppwarpMessageHandler messageHandler;
+	private AppwarpGameHandler messageHandler;
 
 	//-- DATA --//
 	private String roomId;
 	
 	@Override
-	public void initialize(String username, AppwarpMessageHandler messageHandler) throws Exception {
+	public void initialize(String username, AppwarpGameHandler messageHandler) throws Exception {
 		LOGGER.log(Level.INFO, "connect(" + username + ", " + messageHandler + ")");
 		WarpClient.initialize(apiKey, secretKey);
 		warpClient = WarpClient.getInstance();
@@ -121,8 +122,9 @@ public class WarpControllerImpl implements WarpController {
 		if (liveUsers != null) {
 			if (liveUsers.length == 2) {
 				LOGGER.log(Level.INFO, "WE CAN START GAME");
-				messageHandler.getGameCallback().startGame();
+				messageHandler.setState(GameState.PLAYING);
 			} else {
+				messageHandler.setState(GameState.WAITING);
 				LOGGER.log(Level.INFO, "NOT ENOUGH PLAYERS. WE SHOULD WAIT");
 			}
 		} else {

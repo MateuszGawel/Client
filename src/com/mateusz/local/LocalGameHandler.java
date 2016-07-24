@@ -7,14 +7,13 @@ import java.net.Socket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import com.mateusz.api.AbstractMessageHandler;
-import com.mateusz.api.GameCallback;
+import com.mateusz.api.AbstractGameHandler;
 import com.mateusz.api.Message;
 import com.mateusz.api.MessageBuilder;
 import com.mateusz.utils.JSONConverter;
 
-public abstract class LocalMessageHandler extends AbstractMessageHandler {
-	private static final Logger LOGGER = Logger.getLogger(LocalMessageHandler.class.getName());
+public class LocalGameHandler extends AbstractGameHandler {
+	private static final Logger LOGGER = Logger.getLogger(LocalGameHandler.class.getName());
 	
 	private static final int SERVER_PORT = 6066;
 	private static final String SERVER_ADDRESS = "localhost";
@@ -23,24 +22,23 @@ public abstract class LocalMessageHandler extends AbstractMessageHandler {
 	private DataInputStream in;
 	private DataOutputStream out;
 	
-	public LocalMessageHandler(MessageBuilder<?> messageBuilder, GameCallback gameCallback) {
-		super(messageBuilder, gameCallback);
+	public LocalGameHandler(MessageBuilder<?> messageBuilder) {
+		super(messageBuilder);
 	}
 
 	@Override
-	public void connect(String name) {
+	public void connect() {
 		try {
 			playerSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
 			in = new DataInputStream(playerSocket.getInputStream());
 			out = new DataOutputStream(playerSocket.getOutputStream());
 			
-			playerName = name;
 			connected = true;
 			
 			onSubscribedToRoom();
 			
 			//start game automatically
-			getGameCallback().startGame();
+//			getGameCallback().startGame();
 
 		} catch (IOException e) {
 			LOGGER.log(Level.SEVERE, "Couldn't connect. Server is down.", e);
@@ -54,7 +52,7 @@ public abstract class LocalMessageHandler extends AbstractMessageHandler {
 				if (in.available() > 0) {
 					String inputMessage = in.readUTF();
 					LOGGER.log(Level.INFO, "Message received: " + inputMessage);
-					handleMessages(inputMessage);
+					handleMessage(inputMessage);
 				}
 			} catch (IOException e) {
 				LOGGER.log(Level.INFO, "Connection lost");

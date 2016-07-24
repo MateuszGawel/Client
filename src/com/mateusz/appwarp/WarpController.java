@@ -15,7 +15,7 @@ public interface WarpController {
 	 * @param abstractMessageHandler 
 	 * @throws exception while initialization was not possible
 	 */
-	void initialize(String username, AppwarpMessageHandler abstractMessageHandler) throws Exception;
+	void initialize(String username, AppwarpGameHandler abstractMessageHandler) throws Exception;
 
 	void onConnectDone(boolean status);
 

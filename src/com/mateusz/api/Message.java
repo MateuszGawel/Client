@@ -9,6 +9,8 @@ public class Message implements Serializable {
 	private MessageType type;
 	private Object content;
 	private String senderName;
+	
+	private Float posX, posY;
 
 	public Message() {
 
@@ -18,32 +20,30 @@ public class Message implements Serializable {
 		this.type = messageBuilder.getType();
 		this.content = messageBuilder.getContent();
 		this.senderName = messageBuilder.getSenderName();
+		this.posX = messageBuilder.getPosX();
+		this.posY = messageBuilder.getPosY();
 	}
 
 	public MessageType getType() {
 		return type;
 	}
 
-	public void setType(MessageType type) {
-		this.type = type;
-	}
-
 	public Object getContent() {
 		return content;
-	}
-
-	public void setContent(Object content) {
-		this.content = content;
 	}
 
 	public String getSenderName() {
 		return senderName;
 	}
 
-	public void setSenderName(String senderName) {
-		this.senderName = senderName;
+	public Float getPosX() {
+		return posX;
 	}
 
+	public Float getPosY() {
+		return posY;
+	}
+	
 	@Override
 	public String toString() {
 		return "Message [type=" + type + ", content=" + content + ", senderName=" + senderName + "]";

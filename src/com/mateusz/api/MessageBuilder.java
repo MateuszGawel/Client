@@ -1,18 +1,27 @@
 package com.mateusz.api;
 
 public class MessageBuilder<T extends MessageBuilder<?>> {
+
 	private MessageType type;
 	private Object content;
 	private String senderName;
+	private Float posX, posY;
 
-	public MessageBuilder(MessageType type, String senderName) {
+	public MessageBuilder(MessageType type) {
 		this.type = type;
-		this.senderName = senderName;
+		this.senderName = AbstractGameHandler.playerName;
 	}
 
 	@SuppressWarnings("unchecked")
 	public T content(Object content) {
 		this.content = content;
+		return (T) this;
+	}
+
+	@SuppressWarnings("unchecked")
+	public T position(Float posX, Float posY) {
+		this.posX = posX;
+		this.posY = posY;
 		return (T) this;
 	}
 
@@ -32,4 +41,11 @@ public class MessageBuilder<T extends MessageBuilder<?>> {
 		return senderName;
 	}
 
+	public Float getPosX() {
+		return posX;
+	}
+
+	public Float getPosY() {
+		return posY;
+	}
 }
