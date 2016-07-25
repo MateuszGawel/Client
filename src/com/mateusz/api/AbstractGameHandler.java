@@ -11,7 +11,7 @@ public abstract class AbstractGameHandler {
 	private static final Logger LOGGER = Logger.getLogger(AbstractGameHandler.class.getName());
 
 	//-------------------- CONFIG --------------------//
-	private static final float MESSAGE_SEND_INTERVAL = 0.5f;
+	private static final float MESSAGE_SEND_INTERVAL = 0.1f;
 
 	//-------------------- HELPERS --------------------//
 	private float stateTime;
@@ -26,7 +26,7 @@ public abstract class AbstractGameHandler {
 
 	protected boolean connected;
 	protected boolean subscribed;
-	
+
 	public static String playerName;
 
 	//---------------------- HANDLERS ----------------------//
@@ -34,7 +34,7 @@ public abstract class AbstractGameHandler {
 	private MessageBuilder<?> synchronousMessageBuilder;
 
 	//-------------------- CONSTRUCTORS ---------------------//
-	
+
 	/**
 	 * Handler will use default synchronous message builder with MessageType.UPDATE_STATE
 	 * 
@@ -45,7 +45,7 @@ public abstract class AbstractGameHandler {
 		AbstractGameHandler.playerName = playerName;
 		this.synchronousMessageBuilder = new MessageBuilder(MessageType.UPDATE_STATE);
 	}
-	
+
 	/**
 	 * Custom message builder can be provided. It's necessary if you extend Message
 	 * 
@@ -71,39 +71,37 @@ public abstract class AbstractGameHandler {
 
 		//if null - couldn't parse message - it means that it should be handled by specific game
 		if (message == null) {
+			LOGGER.log(Level.INFO, "Can't parse message by API");
 			messageResolver.resolve(messageJson);
 			return;
 		}
 
 		//do nothing if i am sender
 		if (playerName.equals(message.getSenderName())) {
+			LOGGER.log(Level.INFO, "My own message. Skipping");
 			return;
 		}
 
 		String senderName = message.getSenderName();
 		MessageType messageType = message.getType();
 
+		//always add player to the map if missing
+		if (!playerConfigs.containsKey(senderName)) {
+			playerConfigs.put(senderName, "");
+		}
+
 		//config and subscribe are handled by API
 		if (MessageType.SUBSCRIBE.equals(messageType)) {
-			if (!playerConfigs.containsKey(senderName)) {
-				//initialize with empty config
-				playerConfigs.put(senderName, "");
-
-				//send to others
-				if (message.getContent() != null && !message.getContent().equals("introduce")) {
-					sendMessage(new MessageBuilder(MessageType.SUBSCRIBE).content("introduce").build());
-				}
+			//send to others
+			if (message.getContent() != null && message.getContent().equals("subscribe")) {
+				//we answer for subscribe but not for introduce to avoid loop
+				sendMessage(new MessageBuilder(MessageType.SUBSCRIBE).content("introduce").build());
 			}
 		} else if (MessageType.CONFIG_DATA.equals(messageType)) {
-			if (playerConfigs.containsKey(senderName)) {
-				playerConfigs.put(senderName, message.getContent().toString());
-			} else {
-				//if this happen, something went really wrong
-				LOGGER.log(Level.INFO, "Player " + message.getSenderName() + " doesn't exist");
-			}
+			playerConfigs.put(senderName, message.getContent().toString());
 		} else {
 			//custom handling by specific game
-			messageResolver.resolve(messageJson);
+			messageResolver.resolve(message);
 		}
 
 	}
@@ -112,7 +110,7 @@ public abstract class AbstractGameHandler {
 
 	@SuppressWarnings("rawtypes")
 	public void onSubscribedToRoom() {
-		LOGGER.log(Level.INFO, "Introducing myself: " + playerName);
+		LOGGER.log(Level.INFO, "Subscribe myself: " + playerName);
 		sendMessage(new MessageBuilder(MessageType.SUBSCRIBE).content("subscribe").build());
 	}
 
@@ -170,5 +168,5 @@ public abstract class AbstractGameHandler {
 	public Map<String, String> getPlayerConfigs() {
 		return playerConfigs;
 	}
-	
+
 }
