@@ -2,6 +2,7 @@ package com.mateusz.api;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +29,8 @@ public abstract class AbstractGameHandler {
 	protected boolean subscribed;
 
 	public static String playerName;
+	public static int lastMessageSent = 0;
+	public static int lastMessageReceived = 0;
 
 	//---------------------- HANDLERS ----------------------//
 	private MessageResolver messageResolver;
@@ -41,7 +44,7 @@ public abstract class AbstractGameHandler {
 	 * @param playerName
 	 */
 	@SuppressWarnings("rawtypes")
-	public AbstractGameHandler(String playerName) {
+	public AbstractGameHandler(String playerName) {	
 		AbstractGameHandler.playerName = playerName;
 		this.synchronousMessageBuilder = new MessageBuilder(MessageType.UPDATE_STATE);
 	}
@@ -66,22 +69,25 @@ public abstract class AbstractGameHandler {
 
 	@SuppressWarnings("rawtypes")
 	protected void handleMessage(String messageJson) {
-
+		//TODO care when overriding message
 		Message message = JSONConverter.JSONtoObject(messageJson, Message.class);
 
 		//if null - couldn't parse message - it means that it should be handled by specific game
 		if (message == null) {
-			LOGGER.log(Level.INFO, "Can't parse message by API");
+			LOGGER.log(Level.INFO, "Message received: " + messageJson);
+			LOGGER.log(Level.INFO, "Can't parse message by API. It has to be handled by game");
 			messageResolver.resolve(messageJson);
 			return;
 		}
 
 		//do nothing if i am sender
 		if (playerName.equals(message.getSenderName())) {
-			LOGGER.log(Level.INFO, "My own message. Skipping");
+			LOGGER.log(Level.INFO, "Received my own message. Skipping");
 			return;
 		}
 
+		LOGGER.log(Level.INFO, "Message received: " + messageJson);
+		
 		String senderName = message.getSenderName();
 		MessageType messageType = message.getType();
 
@@ -89,6 +95,13 @@ public abstract class AbstractGameHandler {
 		if (!playerConfigs.containsKey(senderName)) {
 			playerConfigs.put(senderName, "");
 		}
+		
+		//always update lastMessageReceived (value taken from message so sent - means that is was sent by opponent so it's received for us
+		if(AbstractGameHandler.lastMessageReceived > message.getLastMessageSent()){
+			LOGGER.log(Level.INFO, "Message out of order. Skipping");
+			return;
+		}
+		AbstractGameHandler.lastMessageReceived = message.getLastMessageSent();
 
 		//config and subscribe are handled by API
 		if (MessageType.SUBSCRIBE.equals(messageType)) {
@@ -99,9 +112,12 @@ public abstract class AbstractGameHandler {
 			}
 		} else if (MessageType.CONFIG_DATA.equals(messageType)) {
 			playerConfigs.put(senderName, message.getContent().toString());
-		} else {
+		} else if(messageResolver != null){
 			//custom handling by specific game
 			messageResolver.resolve(message);
+		}
+		else{
+			LOGGER.log(Level.INFO, "Message resolver is not set, either you forgot about it or it's not set yet. Skipping message");
 		}
 
 	}

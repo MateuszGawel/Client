@@ -9,6 +9,11 @@ public class Message implements Serializable {
 	private MessageType type;
 	private Object content;
 	private String senderName;
+	private Long time;
+	
+	private int lastMessageSent;
+	private int lastMessageReceived;
+	
 	
 	private Float posX, posY;
 
@@ -22,6 +27,9 @@ public class Message implements Serializable {
 		this.senderName = messageBuilder.getSenderName();
 		this.posX = messageBuilder.getPosX();
 		this.posY = messageBuilder.getPosY();
+		this.time = messageBuilder.getTime();
+		this.lastMessageSent = messageBuilder.getLastMessageSent();
+		this.lastMessageReceived = messageBuilder.getLastMessageReceived();
 	}
 
 	public MessageType getType() {
@@ -43,9 +51,17 @@ public class Message implements Serializable {
 	public Float getPosY() {
 		return posY;
 	}
-	
-	@Override
-	public String toString() {
-		return "Message [type=" + type + ", content=" + content + ", senderName=" + senderName + "]";
+
+	public Long getTime() {
+		return time;
 	}
+	
+	public int getLastMessageSent() {
+		return lastMessageSent;
+	}
+
+	public int getLastMessageReceived() {
+		return lastMessageReceived;
+	}
+
 }

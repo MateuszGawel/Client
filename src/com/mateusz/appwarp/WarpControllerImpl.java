@@ -1,5 +1,6 @@
 package com.mateusz.appwarp;
 
+import java.lang.reflect.GenericArrayType;
 import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -38,6 +39,7 @@ public class WarpControllerImpl implements WarpController {
 		LOGGER.log(Level.INFO, "connect(" + username + ", " + messageHandler + ")");
 		WarpClient.initialize(apiKey, secretKey);
 		warpClient = WarpClient.getInstance();
+//		warpClient.setGeo("eu");
 		this.messageHandler = messageHandler;
 		
 		addListeners();
@@ -141,7 +143,6 @@ public class WarpControllerImpl implements WarpController {
 
 	@Override
 	public void onUpdatePeersReceived(String message) {
-		LOGGER.log(Level.INFO, "Message received: " + message);
 		messageHandler.getMessageQueue().offer(message);
 	}
 	//------------- PRIVATE METHODS ----------------//
