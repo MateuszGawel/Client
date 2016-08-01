@@ -7,7 +7,7 @@ public class Message implements Serializable {
 	private static final long serialVersionUID = 8587188729074776736L;
 
 	private MessageType type;
-	private Object content;
+	private String content;
 	private String senderName;
 	private Long time;
 	
@@ -36,7 +36,7 @@ public class Message implements Serializable {
 		return type;
 	}
 
-	public Object getContent() {
+	public String getContent() {
 		return content;
 	}
 

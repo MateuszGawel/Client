@@ -2,7 +2,6 @@ package com.mateusz.api;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.ConsoleHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -183,6 +182,10 @@ public abstract class AbstractGameHandler {
 
 	public Map<String, String> getPlayerConfigs() {
 		return playerConfigs;
+	}
+
+	public void setSynchronousMessageBuilder(MessageBuilder<?> synchronousMessageBuilder) {
+		this.synchronousMessageBuilder = synchronousMessageBuilder;
 	}
 
 }
