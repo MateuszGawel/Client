@@ -75,6 +75,7 @@ public abstract class AbstractGameHandler {
 		if (message == null) {
 			LOGGER.log(Level.INFO, "Message received: " + messageJson);
 			LOGGER.log(Level.INFO, "Can't parse message by API. It has to be handled by game");
+			messageResolver.performAlgorithms(messageJson);
 			messageResolver.resolve(messageJson);
 			return;
 		}
@@ -113,6 +114,7 @@ public abstract class AbstractGameHandler {
 			playerConfigs.put(senderName, message.getContent().toString());
 		} else if(messageResolver != null){
 			//custom handling by specific game
+			messageResolver.performAlgorithms(message);
 			messageResolver.resolve(message);
 		}
 		else{
