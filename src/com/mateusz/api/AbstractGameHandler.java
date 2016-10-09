@@ -5,13 +5,11 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import com.mateusz.api.configuration.Configuration;
 import com.mateusz.utils.JSONConverter;
 
 public abstract class AbstractGameHandler {
 	private static final Logger LOGGER = Logger.getLogger(AbstractGameHandler.class.getName());
-
-	//-------------------- CONFIG --------------------//
-	private static final float MESSAGE_SEND_INTERVAL = 0.1f;
 
 	//-------------------- HELPERS --------------------//
 	private float stateTime;
@@ -138,7 +136,7 @@ public abstract class AbstractGameHandler {
 	 */
 	public void sendBufferedMessage(float delta) {
 		stateTime += delta;
-		if (connected && stateTime > MESSAGE_SEND_INTERVAL) {
+		if (connected && stateTime > Configuration.MESSAGE_SEND_INTERVAL) {
 			stateTime = 0;
 			sendMessage(synchronousMessageBuilder.build());
 		}

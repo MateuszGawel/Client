@@ -10,26 +10,28 @@ import java.util.logging.Logger;
 import com.mateusz.api.AbstractGameHandler;
 import com.mateusz.api.Message;
 import com.mateusz.api.MessageBuilder;
+import com.mateusz.local.configuration.LocalConfiguration;
 import com.mateusz.utils.JSONConverter;
 
 public class LocalGameHandler extends AbstractGameHandler {
 	private static final Logger LOGGER = Logger.getLogger(LocalGameHandler.class.getName());
 	
-	private static final int SERVER_PORT = 6066;
-	private static final String SERVER_ADDRESS = "localhost";
-	
 	private Socket playerSocket;
 	private DataInputStream in;
 	private DataOutputStream out;
 	
-	public LocalGameHandler(MessageBuilder<?> messageBuilder) {
+	public LocalGameHandler(String playerName) {
+		super(playerName);
+	}
+	
+	public LocalGameHandler(String playerName, MessageBuilder<?> messageBuilder) {
 		super(messageBuilder);
 	}
-
+	
 	@Override
 	public void connect() {
 		try {
-			playerSocket = new Socket(SERVER_ADDRESS, SERVER_PORT);
+			playerSocket = new Socket(LocalConfiguration.SERVER_ADDRESS, LocalConfiguration.SERVER_PORT);
 			in = new DataInputStream(playerSocket.getInputStream());
 			out = new DataOutputStream(playerSocket.getOutputStream());
 			
@@ -63,7 +65,7 @@ public class LocalGameHandler extends AbstractGameHandler {
 	}
 	
 	@Override
-	protected void sendMessage(Message message) {
+	public void sendMessage(Message message) {
 		try {
 			out.writeUTF(JSONConverter.ObjectToJSON(message));
 		} catch (IOException e) {

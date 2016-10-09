@@ -6,6 +6,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import com.mateusz.api.GameState;
+import com.mateusz.appwarp.configuration.AppwarpConfiguration;
 import com.mateusz.appwarp.listener.ChatListener;
 import com.mateusz.appwarp.listener.ConnectionListener;
 import com.mateusz.appwarp.listener.LobbyListener;
@@ -26,8 +27,6 @@ public class WarpControllerImpl implements WarpController {
 	}
 
 	//-- KEYS --//
-	private final String apiKey = "96fdf27bb654f2d6e0e5fc558673b728b636deebc01e5725d6275f92148a871c";
-	private final String secretKey = "48bffe83864b4b125ed75192784ec2e8579cb73ba1b420e72ae095b2455b80c4";
 	private WarpClient warpClient;
 	private AppwarpGameHandler messageHandler;
 
@@ -37,7 +36,7 @@ public class WarpControllerImpl implements WarpController {
 	@Override
 	public void initialize(String username, AppwarpGameHandler messageHandler) throws Exception {
 		LOGGER.log(Level.INFO, "connect(" + username + ", " + messageHandler + ")");
-		WarpClient.initialize(apiKey, secretKey);
+		WarpClient.initialize(AppwarpConfiguration.API_KEY, AppwarpConfiguration.SECRET_KEY);
 		warpClient = WarpClient.getInstance();
 //		warpClient.setGeo("eu");
 		this.messageHandler = messageHandler;
